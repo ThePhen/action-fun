@@ -54,3 +54,18 @@ jobs:
       with:
         name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
         path: output.txt
+  
+  Deploy_Service:
+    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref || 'main' }} 
+    
+    steps:
+      - name: Restore Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
+      - name: List Output
+        run: |
+          pwd
+          ls -al
