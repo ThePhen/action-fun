@@ -45,10 +45,15 @@ jobs:
                 run_id: context.payload.workflow_run.id,
             });
             
+            console.dir(allArtifacts);
+            console.log(`Looking for name: '${process.env.ARTIFACT_NAME}'.`)
+
             let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "process.env.ARTIFACT_NAME"
             })[0];
             
+            console.dir(matchArtifact);
+
             let download = await github.rest.actions.downloadArtifact({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
