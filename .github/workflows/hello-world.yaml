@@ -10,13 +10,12 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   SERVICE_NAME: ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'NO_BASE_REF' }}
   TARGET_SERVER: ${{ vars.TARGET_SERVER }}
-  SSH_PEM: ${{ secrets.SSH_PEM }}
     
 jobs:
-  Deploy_Service:
-    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
+  Build_Service:
+    name: Build ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref || 'main' }}
+    environment: ${{ github.base_ref || 'main' }} 
     
     steps:
     - name: Workflow Target Summary
@@ -24,11 +23,12 @@ jobs:
         SHA: ${{ github.sha }}
       run: |
         echo "### ${{ env.SERVICE_NAME }}-${SHA::7} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)" >> $GITHUB_STEP_SUMMARY
-        echo 'GH environment: ${{ github.base_ref || 'main' }}' >> $GITHUB_STEP_SUMMARY
-        echo "Short SHA: ${SHA::7}" >> $GITHUB_STEP_SUMMARY
-        echo "SHA: ${SHA}" >> $GITHUB_STEP_SUMMARY
-        echo 'Workflow SHA: ${{ github.workflow_sha }}' >> $GITHUB_STEP_SUMMARY
-        echo 'Job Workflow SHA: ${{ github.job_workflow_sha }}' >> $GITHUB_STEP_SUMMARY
+        echo '|Variable|Value|' >> $GITHUB_STEP_SUMMARY
+        echo '|-------|-------|' >> $GITHUB_STEP_SUMMARY
+        echo '|GH environment|${{ github.base_ref || 'main' }}|' >> $GITHUB_STEP_SUMMARY
+        echo "|Short SHA|${SHA::7}|" >> $GITHUB_STEP_SUMMARY
+        echo "|SHA|${SHA}|" >> $GITHUB_STEP_SUMMARY
+        echo '|Workflow SHA|${{ github.workflow_sha }}|' >> $GITHUB_STEP_SUMMARY
 
     - name: Fetch Service '${{ github.event.repository.name }}'
       uses: actions/checkout@v4
