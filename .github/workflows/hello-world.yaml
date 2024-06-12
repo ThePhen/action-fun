@@ -41,8 +41,7 @@ jobs:
       env: 
         SHA: ${{ github.sha }}
       run: |
-        echo "${SHA::7}"
-        echo "${SHA::7}" >> $GITHUB_OUTPUT
+        echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
       working-directory: ${{ env.REPO_NAME }}
 
     - name: Dump GitHub context
@@ -71,8 +70,7 @@ jobs:
         env: 
           SHA: ${{ github.sha }}
         run: |
-          echo "${SHA::7}"
-          echo "${SHA::7}" >> $GITHUB_OUTPUT
+          echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
         working-directory: ${{ env.REPO_NAME }}
 
       - name: Restore Build Artifacts
