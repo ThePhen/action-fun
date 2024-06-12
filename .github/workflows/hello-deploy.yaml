@@ -6,6 +6,11 @@ on:
   pull_request: 
     branches: ["main", "staging"]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Build"]
+      branches: ["main", "staging", "production"]
+      types: 
+        - completed
 
 env:
   WEBAPP_REF: ${{ vars.WEBAPP_REF || github.base_ref || github.ref_name || 'main' }}
@@ -14,51 +19,7 @@ env:
   TARGET_SERVER: ${{ vars.TARGET_SERVER }}
     
 jobs:
-  Build_Service:
-    name: Build ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
-    runs-on: ubuntu-latest
-    environment: ${{ github.base_ref || 'main' }} 
-    
-    steps:
-    - name: Workflow Target Summary
-      env:
-        SHA: ${{ github.sha }}
-      run: |
-        echo "### ${{ env.SERVICE_NAME }}-${SHA::7} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)" >> $GITHUB_STEP_SUMMARY
-        echo '|Variable|Value|' >> $GITHUB_STEP_SUMMARY
-        echo '|-------|-------|' >> $GITHUB_STEP_SUMMARY
-        echo '|GH environment|${{ github.base_ref || 'main' }}|' >> $GITHUB_STEP_SUMMARY
-        echo "|Short SHA|${SHA::7}|" >> $GITHUB_STEP_SUMMARY
-        echo "|SHA|${SHA}|" >> $GITHUB_STEP_SUMMARY
-        echo '|Workflow SHA|${{ github.workflow_sha }}|' >> $GITHUB_STEP_SUMMARY
 
-    - name: Fetch Service '${{ github.event.repository.name }}'
-      uses: actions/checkout@v4
-      with:
-        path: ${{ env.REPO_NAME }}
-
-    - name: Get the Git Short SHA (for naming things later)
-      # The output of this step is used to help rename things later in the build
-      id: vars
-      env: 
-        SHA: ${{ github.sha }}
-      run: |
-        echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
-      working-directory: ${{ env.REPO_NAME }}
-
-    - name: Dump GitHub Context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |
-        echo "$GITHUB_CONTEXT"
-        echo "${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}" > output.txt
-
-    - name: Store Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
-        path: output.txt
-  
   Deploy_Service:
     name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
     needs: Build_Service

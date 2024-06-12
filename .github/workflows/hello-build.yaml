@@ -57,28 +57,4 @@ jobs:
       with:
         name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
         path: output.txt
-  
-  Deploy_Service:
-    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
-    needs: Build_Service
-    runs-on: ubuntu-latest
-    environment: ${{ github.base_ref || 'main' }} 
-    
-    steps:
-      - name: Get the Git Short SHA (for naming things later)
-        # The output of this step is used to help rename things later in the build
-        id: vars
-        env: 
-          SHA: ${{ github.sha }}
-        run: |
-          echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
 
-      - name: Restore Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
-
-      - name: List Output
-        run: |
-          pwd
-          ls -al
