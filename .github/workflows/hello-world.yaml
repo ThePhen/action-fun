@@ -57,6 +57,7 @@ jobs:
   
   Deploy_Service:
     name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
+    needs: Build_Service
     runs-on: ubuntu-latest
     environment: ${{ github.base_ref || 'main' }} 
     
