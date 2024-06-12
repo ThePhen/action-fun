@@ -33,12 +33,42 @@ jobs:
         run: |
           echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
 
-      - name: Restore Build Artifacts
-        uses: actions/download-artifact@v4
+      - name: 'Download artifact'
+        uses: actions/github-script@v7
+        env:
+          ARTIFACT_NAME: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
         with:
-          name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.payload.workflow_run.id,
+            });
+            
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "process.env.ARTIFACT_NAME"
+            })[0];
+            
+            let download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip',
+            });
+            
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/${process.env.ARTIFACT_NAME}.zip`, Buffer.from(download.data));
+            
+      - name: 'Unzip artifact'
+        run: unzip ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}.zip
+
+      # - name: Restore Build Artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
 
       - name: List Output
         run: |
           pwd
           ls -al
+
