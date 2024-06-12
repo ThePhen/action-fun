@@ -19,7 +19,6 @@ env:
   TARGET_SERVER: ${{ vars.TARGET_SERVER }}
     
 jobs:
-
   Deploy_Service:
     name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
     runs-on: ubuntu-latest
