@@ -41,6 +41,7 @@ jobs:
       env: 
         SHA: ${{ github.sha }}
       run: |
+        echo "${SHA::7}"
         echo "${SHA::7}" >> $GITHUB_OUTPUT
       working-directory: ${{ env.REPO_NAME }}
 
@@ -70,6 +71,7 @@ jobs:
         env: 
           SHA: ${{ github.sha }}
         run: |
+          echo "${SHA::7}"
           echo "${SHA::7}" >> $GITHUB_OUTPUT
         working-directory: ${{ env.REPO_NAME }}
 
@@ -77,7 +79,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
-          
+
       - name: List Output
         run: |
           pwd
