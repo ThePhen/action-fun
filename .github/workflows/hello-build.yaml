@@ -1,6 +1,9 @@
 name: learn-github-actions
 run-name: ${{ github.actor }} triggered ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name }}
-on:
+on: 
+  push:
+  pull_request:
+    branches: ["main", "staging"]
   workflow_dispatch:
 
 env:
