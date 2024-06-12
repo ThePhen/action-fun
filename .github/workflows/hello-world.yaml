@@ -1,5 +1,5 @@
 name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
+run-name: ${{ github.actor }} triggered ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name }}
 on: 
     push:
         
@@ -10,21 +10,21 @@ on:
 env:
     WEBAPP_REF: ${{ vars.WEBAPP_REF || github.base_ref || '??' }}
     REPO_NAME: ${{ github.event.repository.name }}
-    SERVICE_NAME: ${{ github.event.repository.name }}-${{ github.base_ref || 'NO_BASE_REF' }}
+    SERVICE_NAME: ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'NO_BASE_REF' }}
     TARGET_SERVER: ${{ vars.TARGET_SERVER }}
     SSH_PEM: ${{ secrets.SSH_PEM }}
     
 jobs:
   Deploy_Service:
-    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || 'NO_BASE_REF' }}
+    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref || 'NO_BASE_REF_FOR_ENVIRONMENT' }}
+    environment: ${{ github.base_ref || 'main' }}
     
     steps:
     - name: Workflow Target Summary
       run: |
         echo '## ${{ env.SERVICE_NAME }} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)' >> $GITHUB_STEP_SUMMARY
-        echo '### ${{ github.base_ref || 'NO_BASE_REF_FOR_ENVIRONMENT' }}' >> $GITHUB_STEP_SUMMARY
+        echo '### GH environment: ${{ github.base_ref || 'main' }}' >> $GITHUB_STEP_SUMMARY
 
     - name: Fetch Service '${{ github.event.repository.name }}'
       uses: actions/checkout@v4
