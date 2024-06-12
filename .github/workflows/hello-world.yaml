@@ -71,7 +71,6 @@ jobs:
           SHA: ${{ github.sha }}
         run: |
           echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
-        working-directory: ${{ env.REPO_NAME }}
 
       - name: Restore Build Artifacts
         uses: actions/download-artifact@v4
