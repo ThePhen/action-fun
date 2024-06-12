@@ -27,8 +27,8 @@ jobs:
       run: |
         echo '## ${{ env.SERVICE_NAME }} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)' >> $GITHUB_STEP_SUMMARY
         echo 'GH environment: ${{ github.base_ref || 'main' }}' >> $GITHUB_STEP_SUMMARY
-        echo 'Short SHA: ${SHA::7}' >> $GITHUB_STEP_SUMMARY
-        echo 'SHA: ${SHA}' >> $GITHUB_STEP_SUMMARY
+        echo "Short SHA: ${SHA::7}" >> $GITHUB_STEP_SUMMARY
+        echo "SHA: ${SHA}" >> $GITHUB_STEP_SUMMARY
         echo 'Workflow SHA: ${{ github.workflow_sha }}' >> $GITHUB_STEP_SUMMARY
         echo 'Job Workflow SHA: ${{ github.job_workflow_sha }}' >> $GITHUB_STEP_SUMMARY
 
