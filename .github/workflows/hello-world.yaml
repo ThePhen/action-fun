@@ -22,9 +22,15 @@ jobs:
     
     steps:
     - name: Workflow Target Summary
+      env:
+        SHA: ${{ github.sha }}
       run: |
         echo '## ${{ env.SERVICE_NAME }} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)' >> $GITHUB_STEP_SUMMARY
-        echo '### GH environment: ${{ github.base_ref || 'main' }}' >> $GITHUB_STEP_SUMMARY
+        echo 'GH environment: ${{ github.base_ref || 'main' }}' >> $GITHUB_STEP_SUMMARY
+        echo 'Short SHA: ${SHA::7}' >> $GITHUB_STEP_SUMMARY
+        echo 'SHA: ${SHA}' >> $GITHUB_STEP_SUMMARY
+        echo 'Workflow SHA: ${{ github.workflow_sha }}' >> $GITHUB_STEP_SUMMARY
+        echo 'Job Workflow SHA: ${{ github.job_workflow_sha }}' >> $GITHUB_STEP_SUMMARY
 
     - name: Fetch Service '${{ github.event.repository.name }}'
       uses: actions/checkout@v4
@@ -35,15 +41,3 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
-    - name: Dump job context
-      env:
-        JOB_CONTEXT: ${{ toJson(job) }}
-      run: echo "$JOB_CONTEXT"
-    - name: Dump steps context
-      env:
-        STEPS_CONTEXT: ${{ toJson(steps) }}
-      run: echo "$STEPS_CONTEXT"
-    - name: Dump strategy context
-      env:
-        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-      run: echo "$STRATEGY_CONTEXT"
