@@ -1,4 +1,4 @@
-name: learn-github-actions
+name: Build
 run-name: ${{ github.actor }} triggered ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name }}
 on: 
   push:
