@@ -1,5 +1,5 @@
 name: Build
-run-name: ${{ github.actor }} triggered ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name }}
+run-name: Build ${{ github.actor }} triggered ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name }}
 on: 
   push:
   pull_request:
