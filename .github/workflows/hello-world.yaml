@@ -22,7 +22,9 @@ jobs:
     
     steps:
     - name: Workflow Target Summary
-      run: echo '## ${{ env.SERVICE_NAME }} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)' >> $GITHUB_STEP_SUMMARY
+      run: |
+        echo '## ${{ env.SERVICE_NAME }} on ${{ vars.PORT }} 🚀 [link](https://${{ vars.TARGET_SERVER }}:${{ vars.PORT }}/swagger/index.html)' >> $GITHUB_STEP_SUMMARY
+        echo '### ${{ github.base_ref || 'NO_BASE_REF_FOR_ENVIRONMENT' }}' >> $GITHUB_STEP_SUMMARY
 
     - name: Fetch Service '${{ github.event.repository.name }}'
       uses: actions/checkout@v4
