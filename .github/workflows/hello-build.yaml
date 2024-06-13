@@ -16,7 +16,7 @@ jobs:
   Build_Service:
     name: Build ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref || 'main' }} 
+    environment: ${{ github.base_ref || github.ref_name || 'main' }} 
     
     steps:
     - name: Workflow Target Summary
