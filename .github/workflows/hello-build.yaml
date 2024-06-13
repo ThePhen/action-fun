@@ -58,3 +58,62 @@ jobs:
         name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
         path: output.txt
 
+  Deploy_Service:
+    name: Deploy ${{ github.event.repository.name }}-${{ github.base_ref || github.ref_name || 'ERROR' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.base_ref || github.ref_name || 'main' }} 
+    
+    steps:
+      - name: Get the Git Short SHA (for naming things later)
+        # The output of this step is used to help rename things later in the build
+        id: vars
+        env: 
+          SHA: ${{ github.sha }}
+        run: |
+          echo "sha_short=${SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: 'Download artifact'
+        uses: actions/github-script@v7
+        env:
+          ARTIFACT_NAME: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.payload.workflow_run.id,
+            });
+            
+            console.dir(allArtifacts);
+            console.log(`Looking for name: '${process.env.ARTIFACT_NAME}'.`)
+
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "process.env.ARTIFACT_NAME"
+            })[0];
+            
+            console.dir(matchArtifact);
+
+            let download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip',
+            });
+            
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/${process.env.ARTIFACT_NAME}.zip`, Buffer.from(download.data));
+            
+      - name: 'Unzip artifact'
+        run: unzip ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}.zip
+
+      # - name: Restore Build Artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: ${{ env.SERVICE_NAME }}-${{ steps.vars.outputs.sha_short }}
+
+      - name: List Output
+        run: |
+          pwd
+          ls -al
+
+  
